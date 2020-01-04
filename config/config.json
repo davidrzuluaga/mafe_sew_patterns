@@ -1,0 +1,23 @@
+{
+  "development": {
+    "host": "ec2-174-129-33-27.compute-1.amazonaws.com",
+    "username": "duzjavquejhhuq",
+    "password": "447be0b26a2383a88f036da66a2db95f1ff35bc5bf1f5c3e34bd2dab049676ee",
+    "database": "d13nq1p72pshnn",
+    "dialect": "postgres"
+  },
+  "test": {
+    "host": "ec2-174-129-33-27.compute-1.amazonaws.com",
+    "username": "duzjavquejhhuq",
+    "password": "447be0b26a2383a88f036da66a2db95f1ff35bc5bf1f5c3e34bd2dab049676ee",
+    "database": "d13nq1p72pshnn",
+    "dialect": "postgres"
+  },
+  "production": {
+    "host": "ec2-174-129-33-27.compute-1.amazonaws.com",
+    "username": "duzjavquejhhuq",
+    "password": "447be0b26a2383a88f036da66a2db95f1ff35bc5bf1f5c3e34bd2dab049676ee",
+    "database": "d13nq1p72pshnn",
+    "dialect": "postgres"
+  }
+}

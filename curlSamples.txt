@@ -1,0 +1,15 @@
+--blog
+
+curl --header "Content-Type: application/json" --header "Authorization":"Token eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Inh5ekB4eXouenl6IiwiaWQiOiI1ZDUzN2ViMTMyYWFjMTI2MmM2YTgzYzAiLCJleHAiOjE1NzA5Mzc0MTIsImlhdCI6MTU2NTc1MzQxMn0.Dlk--zT5xe7TM1DVz6-ga-gioQR-Ihj6pOgTaFEJZag" -d '{"title":"xyz","description":"abx","user": "1", "picture": "http://asd.co"}'  http://localhost:5035/api/blog
+
+curl -i -H "Accept: application/json" -H "Content-Type: application/json" -X GET http://localhost:5035/api/blogs
+
+--users
+
+curl -i -H "Accept: application/json" -H "Content-Type: application/json"  -H "Authorization":"Token eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Inh5ekB4eXouenl6IiwiaWQiOiI1ZDUzN2ViMTMyYWFjMTI2MmM2YTgzYzAiLCJleHAiOjE1NzA5Mzc0MTIsImlhdCI6MTU2NTc1MzQxMn0.Dlk--zT5xe7TM1DVz6-ga-gioQR-Ihj6pOgTaFEJZag" -X GET http://localhost:5035/api/users/test
+
+curl --header "Content-Type: application/json" \ --request POST \ --data '{"user":{"email":"xyz@xyz.zyz","password":"xyz"}}' \ http://localhost:5035/api/users/
+
+curl --header "Content-Type: application/json" \ --request POST \ --data '{"user":{"email":"xyz@xyz.zyz","password":"xyz"}}' \ http://localhost:5035/api/users/login/
+
+curl -i -H "Accept: application/json" -H "Content-Type: application/json" -H "Authorization":"Token eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Inh5ekB4eXouenl6IiwiaWQiOiI1ZDUzN2ViMTMyYWFjMTI2MmM2YTgzYzAiLCJleHAiOjE1NzA5Mzc0MTIsImlhdCI6MTU2NTc1MzQxMn0.Dlk--zT5xe7TM1DVz6-ga-gioQR-Ihj6pOgTaFEJZag" -X GET http://localhost:5035/api/users/current
