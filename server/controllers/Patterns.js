@@ -1,27 +1,30 @@
 const models = require('../models');
 const jwtDecode = require('jwt-decode');
-const Sequelize = require('sequelize');
-const Op = Sequelize.Op;
 
-const getPattern = async (req, res) => {
+const getPatternByCode = async (req, res) => {
   try {
-    const { codeId } = req.params;
-    if (!codeId) {
+    const { code } = req.params;
+    if (!code) {
       return res.status(400).json({
         success: false,
-        message: 'Todos los campos son obligatorios (codeId).',
+        message: 'Todos los campos son obligatorios (code).',
         params: req.params
       });
     }
 
-    const sew_pattern = await models.sew_pattern_code.findOne({
-      where: { sew_pattern_id: codeId },
+    const sew_pattern = await models.sew_pattern_codes.findOne({
+      where: { code, used: null },
       include: [
         {
           model: models.sew_patterns
         }
       ]
     });
+
+    await models.sew_pattern_codes.update(
+      { used: new Date() },
+      { where: { code, used: null } }
+    );
 
     if (!sew_pattern) {
       return res.status(404).json({
@@ -43,7 +46,45 @@ const getPattern = async (req, res) => {
   }
 };
 
-const allPatterns = async (req, res) => {/*
+const updatePattern = async (req, res) => {
+  try {
+    const { patternId } = req.params;
+    const { url, title, description } = req.body;
+
+    if (!patternId) {
+      return res.status(400).json({
+        success: false,
+        message: 'Todos los campos son obligatorios (patternId).',
+        params: req.params
+      });
+    }
+
+    const sew_pattern = await models.sew_patterns.update(
+      { url, title, description },
+      { where: { patternId } }
+    );
+
+    if (!sew_pattern) {
+      return res.status(404).json({
+        success: false,
+        message: 'No se encontró este patrón.'
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      sew_pattern
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Server error. Please try again.',
+      error: error.message
+    });
+  }
+};
+
+const allPatterns = async (req, res) => {
   try {
     const { authorization } = req.headers;
     const decoded = jwtDecode(authorization);
@@ -55,34 +96,10 @@ const allPatterns = async (req, res) => {/*
       });
     }
 
-    const kit1Count = await models.GLS.count({
-      where: { kit: { [Op.ne]: null } }
-    });
-
-    const kit2Count = await models.GLS.count({
-      where: { meal: { [Op.ne]: null } }
-    });
-
-    const attendance1Count = await models.GLS.count({
-      where: { attendance1: { [Op.ne]: null } }
-    });
-
-    const attendance2Count = await models.GLS.count({
-      where: { attendance2: { [Op.ne]: null } }
-    });
-
-    const attendance3Count = await models.GLS.count({
-      where: { attendance3: { [Op.ne]: null } }
-    });
-
-    const attendance4Count = await models.GLS.count({
-      where: { attendance4: { [Op.ne]: null } }
-    });
-
-    const GLSAttendants = await models.Guest.findAll({
+    const sew_patterns = await models.sew_patterns.findAll({
       include: [
         {
-          model: models.GLS
+          model: models.sew_pattern_codes
         }
       ],
       order: [['name', 'ASC']]
@@ -90,15 +107,7 @@ const allPatterns = async (req, res) => {/*
 
     return res.status(200).json({
       success: true,
-      GLSAttendants,
-      counts: {
-        kit1Count,
-        kit2Count,
-        attendance1Count,
-        attendance2Count,
-        attendance3Count,
-        attendance4Count
-      }
+      sew_patterns
     });
   } catch (error) {
     res.status(500).json({
@@ -106,11 +115,11 @@ const allPatterns = async (req, res) => {/*
       message: 'Server error. Please try again.',
       error: error.message
     });
-  }*/
+  }
 };
 
-const deletePattern = async (req, res) => {/*
-  const { guestId } = req.body;
+const deletePattern = async (req, res) => {
+  const { patternId } = req.body;
   try {
     const { authorization } = req.headers;
     const decoded = jwtDecode(authorization);
@@ -118,31 +127,27 @@ const deletePattern = async (req, res) => {/*
     if (decoded.profile !== 1) {
       res.status(401).json({
         success: false,
-        message: 'No esta autorizado para eliminar una inscripción.'
+        message: 'No esta autorizado para eliminar.'
       });
     }
 
-    const GLSAttendant = await models.GLS.destroy({
-      where: { guest_id: guestId }
+    const sew_pattern_code = await models.sew_pattern_codes.destroy({
+      where: { sew_pattern_id: patternId }
     });
 
-    const guest = await models.Guest.findOne({
-      where: { id: guestId },
-      include: [
-        {
-          model: models.GLS
-        }
-      ]
+    const sew_pattern = await models.sew_patterns.destroy({
+      where: { id: patternId }
     });
 
-    if (GLSAttendant) {
+    if (sew_pattern) {
       return res.status(200).json({
         success: true,
-        message: `Inscripción eliminada con éxito`,
-        guest
+        message: `Patrón eliminado con éxito`,
+        sew_pattern,
+        sew_pattern_code
       });
     } else {
-      return res.status(404).send('Ese asistente no existe');
+      return res.status(404).send('Ese patrón no existe');
     }
   } catch (error) {
     res.status(500).json({
@@ -150,18 +155,17 @@ const deletePattern = async (req, res) => {/*
       message: 'Server error. Please try again.',
       error: error.message
     });
-  }*/
+  }
 };
 
 const createPattern = async (req, res) => {
   try {
-    const { url, title, description, expiration } = req.body;
+    const { url, title, description } = req.body;
 
     if (!url) {
       return res.status(400).json({
         success: false,
-        message:
-          'Los campos son obligatorios (url).',
+        message: 'Los campos son obligatorios (url).',
         body: req.body
       });
     }
@@ -177,13 +181,14 @@ const createPattern = async (req, res) => {
     }
 
     let pattern = await models.sew_patterns.create({
-      url, title, description, expiration
+      url,
+      title,
+      description
     });
 
     return res.status(201).json({
       success: true,
-      message:
-        'Patrón creado satisfactoriamente',
+      message: 'Patrón creado satisfactoriamente',
       pattern
     });
   } catch (error) {
@@ -195,8 +200,9 @@ const createPattern = async (req, res) => {
   }
 };
 module.exports = {
-  getPattern,
+  getPatternByCode,
   createPattern,
   allPatterns,
+  updatePattern,
   deletePattern
 };

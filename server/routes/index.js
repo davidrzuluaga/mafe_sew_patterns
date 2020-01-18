@@ -1,10 +1,14 @@
 const { Router } = require('express');
 
 const {
-  getPattern,
+  createPatternCode,
+  deletePatternCode
+} = require('../controllers/Pattern_codes');
+
+const {
+  getPatternByCode,
   createPattern,
   allPatterns,
-  updatePattern,
   deletePattern
 } = require('../controllers/Patterns');
 
@@ -14,15 +18,12 @@ require('../../config/passport')(passport);
 
 const router = Router();
 
-router.get('/', (req, res) => res.send('Welcome'));
+router.get('/', (req, res) => res.send('Welcome MAFE'));
 
 router.post('/signin', Signin);
 router.post('/signup', Signup);
 
-router.get(
-  '/pattern/:codeId',
-  getPattern
-);
+router.get('/pattern/:code', getPatternByCode);
 
 router.get(
   '/patterns',
@@ -36,16 +37,22 @@ router.post(
   createPattern
 );
 
-router.put(
-  '/pattern',
-  passport.authenticate('jwt', { session: false }),
-  updatePattern
-);
-
 router.post(
   '/destroy_pattern',
   passport.authenticate('jwt', { session: false }),
   deletePattern
+);
+
+router.post(
+  '/pattern_code',
+  passport.authenticate('jwt', { session: false }),
+  createPatternCode
+);
+
+router.post(
+  '/destroy_pattern_code',
+  passport.authenticate('jwt', { session: false }),
+  deletePatternCode
 );
 
 module.exports = router;

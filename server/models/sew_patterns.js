@@ -11,10 +11,15 @@ module.exports = (sequelize, DataTypes) => {
       url: { type: DataTypes.TEXT, allowNull: false },
       title: { type: DataTypes.TEXT, allowNull: true },
       description: { type: DataTypes.TEXT, allowNull: true },
-      expiration: { type: DataTypes.DATE, allowNull: true },
+      expiration: { type: DataTypes.DATE, allowNull: true }
     },
     {}
   );
-
+  sew_patterns.associate = function(models) {
+    sew_patterns.hasMany(models.sew_pattern_codes, {
+      foreignKey: 'sew_pattern_id',
+      onDelete: 'CASCADE'
+    });
+  };
   return sew_patterns;
 };
